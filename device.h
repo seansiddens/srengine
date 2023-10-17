@@ -1,7 +1,7 @@
 #pragma once
 
-#include "vk_common.h"
 #include "platform.h"
+#include "vk_common.h"
 
 namespace sren {
 

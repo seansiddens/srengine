@@ -48,9 +48,9 @@ VkDebugUtilsMessengerCreateInfoEXT create_debug_utils_messenger_info() {
     create_info.flags = 0;
     create_info.pfnUserCallback = debug_utils_callback;
     create_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
-                                    VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+                                  VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
     create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT |
-                                VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
+                              VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
 
     return create_info;
 }
@@ -87,7 +87,9 @@ bool Device::init(u32 window_width, u32 window_height) {
     create_info.ppEnabledExtensionNames = requested_extensions;
 
     // Create Vulkan instance.
-    vkCheck(vkCreateInstance(&create_info, nullptr, &instance));
+    if (!vkCheck(vkCreateInstance(&create_info, nullptr, &instance))) {
+        return false;
+    }
     LOG_DBG("Created Vulkan instance.");
 
     swapchain_width = window_width;

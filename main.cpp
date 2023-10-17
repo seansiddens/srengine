@@ -9,5 +9,7 @@ int main() {
         return -1;
     }
 
+    engine.run();
+
     engine.shutdown();
 }

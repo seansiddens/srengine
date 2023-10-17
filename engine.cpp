@@ -5,7 +5,7 @@
 namespace sren {
 
 const u32 window_width = 800;
-const u32 window_height= 600;
+const u32 window_height = 600;
 
 bool Engine::init() {
     // Initialize window.

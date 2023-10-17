@@ -26,6 +26,7 @@ bool Window::init(u32 width_, u32 height_, const char *window_title) {
                                      SDL_WINDOWPOS_CENTERED, width, height, window_flags);
 
     display_refresh = sdl_get_monitor_refresh();
+    LOG_DBG("Initialized window.");
     return true;
 }
 
