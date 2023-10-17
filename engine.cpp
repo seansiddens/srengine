@@ -15,7 +15,7 @@ bool Engine::init() {
     }
 
     // Initialize device.
-    if (!device.init(window_width, window_height)) {
+    if (!device.init(window_width, window_height, window.window_handle)) {
         LOG_ERR("Failed to initialize device!");
         return false;
     }

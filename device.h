@@ -3,11 +3,13 @@
 #include "platform.h"
 #include "vk_common.h"
 
+#include <SDL2/SDL.h>
+
 namespace sren {
 
 class Device {
   public:
-    bool init(u32 window_width, u32 window_height);
+    bool init(u32 window_width, u32 window_height, SDL_Window *window);
     void teardown();
 
   private:

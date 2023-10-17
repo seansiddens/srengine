@@ -57,7 +57,8 @@ VkDebugUtilsMessengerCreateInfoEXT create_debug_utils_messenger_info() {
 }
 #endif // VULKAN_DEBUG_REPORT
 
-bool Device::init(u32 window_width, u32 window_height) {
+
+bool Device::init(u32 window_width, u32 window_height, SDL_Window *window) {
     // 1. Initialize Vulkan instance.
     VkApplicationInfo app_info;
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -126,6 +127,19 @@ bool Device::init(u32 window_width, u32 window_height) {
     }
 #endif
     // TODO: Do I have to do anything for the other extensions I request?
+    
+    // Choose physical device. 
+    // TODO: Do I want a way to manually select a device? 
+    u32 num_physical_device;
+    if (!vkCheck(vkEnumeratePhysicalDevices(vk_instance, &num_physical_device, nullptr))) {
+        return false;
+    }
+    VkPhysicalDevice *gpus = (VkPhysicalDevice *) malloc(sizeof(VkPhysicalDevice) * num_physical_device);
+    if (!vkCheck(vkEnumeratePhysicalDevices(vk_instance, &num_physical_device, gpus))) {
+        return false;
+    }
+
+    // Create drawable surface.
 
     LOG_DBG("Initialized device.");
     return true;
