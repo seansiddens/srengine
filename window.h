@@ -19,7 +19,6 @@ class Window {
     u32 width = 0;
     u32 height = 0;
 
-  private:
     SDL_Window *window_handle;
 
     std::vector<OsMessagesCallback> os_messages_callbacks;

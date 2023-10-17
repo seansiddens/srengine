@@ -63,7 +63,7 @@ void Window::handle_os_messages() {
                         width = new_width;
                         height = new_height;
 
-                        LOG_DBG("Resizing to %u, %u\n", width, height);
+                        LOG_DBG("Resizing to %u, %u", width, height);
                     }
                 }
 
@@ -71,40 +71,40 @@ void Window::handle_os_messages() {
             }
 
             case SDL_WINDOWEVENT_FOCUS_GAINED: {
-                LOG_DBG("Focus Gained\n");
+                LOG_DBG("Focus Gained");
                 break;
             }
             case SDL_WINDOWEVENT_FOCUS_LOST: {
-                LOG_DBG("Focus Lost\n");
+                LOG_DBG("Focus Lost");
                 break;
             }
             case SDL_WINDOWEVENT_MAXIMIZED: {
-                LOG_DBG("Maximized\n");
+                LOG_DBG("Maximized");
                 minimized = false;
                 break;
             }
             case SDL_WINDOWEVENT_MINIMIZED: {
-                LOG_DBG("Minimized\n");
+                LOG_DBG("Minimized");
                 minimized = true;
                 break;
             }
             case SDL_WINDOWEVENT_RESTORED: {
-                LOG_DBG("Restored\n");
+                LOG_DBG("Restored");
                 minimized = false;
                 break;
             }
             case SDL_WINDOWEVENT_TAKE_FOCUS: {
-                LOG_DBG("Take Focus\n");
+                LOG_DBG("Take Focus");
                 break;
             }
             case SDL_WINDOWEVENT_EXPOSED: {
-                LOG_DBG("Exposed\n");
+                LOG_DBG("Exposed");
                 break;
             }
 
             case SDL_WINDOWEVENT_CLOSE: {
                 requested_exit = true;
-                LOG_DBG("Window close event received.\n");
+                LOG_DBG("Window close event received.");
                 break;
             }
             default: {
