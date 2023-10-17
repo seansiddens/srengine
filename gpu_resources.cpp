@@ -14,6 +14,7 @@ RenderPassOutput &RenderPassOutput::reset() {
 }
 
 RenderPassOutput &RenderPassOutput::color(VkFormat format) {
+    // TODO: Why is the API like this? Why do we need multiple color formats stored?
     color_formats[num_color_formats++] = format;
     return *this;
 }

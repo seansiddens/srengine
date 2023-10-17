@@ -20,9 +20,16 @@ static const u8 max_vertex_attributes = 16;
 static const u32 submit_header_sentinel = 0xfefeb7ba;
 static const u32 max_resource_deletions = 64;
 
+static const u32 max_swapchain_images = 3;
+static const u32 max_frames = 2;
+
 namespace RenderPassOperation {
 enum Enum { DontCare, Load, Clear, Count }; // enum Enum
 } // namespace RenderPassOperation
+
+namespace PresentMode {
+enum Enum { Immediate, VSync, VSyncFast, VSyncRelaxed, Count }; // enum Enum
+} // namespace PresentMode
 
 class RenderPassOutput {
   public:
