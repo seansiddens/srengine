@@ -3,10 +3,21 @@
 #include "vk_common.h"
 
 #include <SDL2/SDL_vulkan.h>
-#include <algorithm>
 #include <cassert>
 #include <string.h>
 #include <vector>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall"
+#pragma GCC diagnostic ignored "-Wextra"
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma GCC diagnostic ignored "-Wparentheses"
+#define VMA_IMPLEMENTATION
+#include "external/vk_mem_alloc.h"
+#pragma GCC diagnostic pop
 
 namespace sren {
 
@@ -338,11 +349,48 @@ bool Device::init(u32 window_width_, u32 window_height_, SDL_Window *window) {
         return false;
     }
 
+    // Create VMA allocator.
+    VmaAllocatorCreateInfo allocator_info = {};
+    allocator_info.physicalDevice = vk_physical_device;
+    allocator_info.device = vk_device;
+    allocator_info.instance = vk_instance;
+    if (!vkCheck(vmaCreateAllocator(&allocator_info, &vma_allocator))) {
+        LOG_ERR("Failed to create VMA allocator.")
+        return false;
+    }
+    ////////  Create pools
+    static const u32 global_pool_elements = 128;
+    VkDescriptorPoolSize pool_sizes[] = {
+        {VK_DESCRIPTOR_TYPE_SAMPLER, global_pool_elements},
+        {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, global_pool_elements},
+        {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, global_pool_elements},
+        {VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, global_pool_elements},
+        {VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, global_pool_elements},
+        {VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, global_pool_elements},
+        {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, global_pool_elements},
+        {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, global_pool_elements},
+        {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, global_pool_elements},
+        {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, global_pool_elements},
+        {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, global_pool_elements}};
+    VkDescriptorPoolCreateInfo pool_info = {};
+    pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+    pool_info.maxSets = global_pool_elements * (sizeof(pool_sizes) / sizeof(pool_sizes[0]));
+    pool_info.poolSizeCount = (u32)(sizeof(pool_sizes) / sizeof(pool_sizes[0]));
+    pool_info.pPoolSizes = pool_sizes;
+    if (!vkCheck(
+            vkCreateDescriptorPool(vk_device, &pool_info, vk_alloc_callbacks, &vk_descriptor_pool))) {
+        LOG_ERR("Failed to create descriptor pool.");
+        return false;
+    }
+
     LOG_DBG("Initialized Device.");
     return true;
 }
 
 void Device::teardown() {
+    destroy_swapchain();
+
     vkDestroyDevice(vk_device, vk_alloc_callbacks);
 
     vkDestroySurfaceKHR(vk_instance, vk_surface, vk_alloc_callbacks);
@@ -417,6 +465,7 @@ bool Device::create_swapchain() {
         // Create an image view which we can render into.
         VkImageViewCreateInfo view_info;
         view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        view_info.pNext = nullptr;
         view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
         view_info.format = vk_surface_format.format;
         view_info.image = vk_swapchain_images[iv];
