@@ -22,8 +22,8 @@ bool Window::init(u32 width_, u32 height_, const char *window_title) {
 
     // TODO: Initialize w/ user passed window config.
     auto window_flags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE;
-    window_handle = SDL_CreateWindow(window_title, SDL_WINDOWPOS_CENTERED,
-                                     SDL_WINDOWPOS_CENTERED, width, height, window_flags);
+    window_handle = SDL_CreateWindow(window_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width,
+                                     height, window_flags);
 
     display_refresh = sdl_get_monitor_refresh();
     LOG_DBG("Initialized window.");

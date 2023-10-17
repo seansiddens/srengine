@@ -25,6 +25,7 @@ bool Engine::init() {
 }
 
 void Engine::shutdown() {
+    // TODO: Better way of automatically cleaning everything up?
     window.teardown();
     device.teardown();
     LOG_INFO("Engine shutdown.");

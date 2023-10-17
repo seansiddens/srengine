@@ -2,6 +2,8 @@
 
 #include "vk_common.h"
 
+#include <string.h>
+
 namespace sren {
 
 // Validation layers to enable.
@@ -29,8 +31,7 @@ static const char *requested_extensions[] = {
 #ifdef VULKAN_DEBUG_REPORT
 static VkBool32 debug_utils_callback(VkDebugUtilsMessageSeverityFlagBitsEXT severity,
                                      VkDebugUtilsMessageTypeFlagsEXT,
-                                     const VkDebugUtilsMessengerCallbackDataEXT *callback_data,
-                                     void *) {
+                                     const VkDebugUtilsMessengerCallbackDataEXT *callback_data, void *) {
     LOG_ERR("MessageID: %s %i\nMessage: %s\n", callback_data->pMessageIdName,
             callback_data->messageIdNumber, callback_data->pMessage);
 
@@ -47,10 +48,10 @@ VkDebugUtilsMessengerCreateInfoEXT create_debug_utils_messenger_info() {
     create_info.pNext = nullptr;
     create_info.flags = 0;
     create_info.pfnUserCallback = debug_utils_callback;
-    create_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
-                                  VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
-    create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT |
-                              VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
+    create_info.messageSeverity =
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+    create_info.messageType =
+        VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
 
     return create_info;
 }
@@ -72,8 +73,7 @@ bool Device::init(u32 window_width, u32 window_height) {
     create_info.pApplicationInfo = &app_info;
 #ifdef VULKAN_DEBUG_REPORT
     // Set debug layers, if applicable.
-    const VkDebugUtilsMessengerCreateInfoEXT debug_create_info =
-        create_debug_utils_messenger_info();
+    const VkDebugUtilsMessengerCreateInfoEXT debug_create_info = create_debug_utils_messenger_info();
     create_info.pNext = &debug_create_info;
     create_info.enabledLayerCount = sizeof(requested_layers) / sizeof(requested_layers[0]);
     create_info.ppEnabledLayerNames = requested_layers;
@@ -82,12 +82,11 @@ bool Device::init(u32 window_width, u32 window_height) {
     create_info.enabledLayerCount = 0;
     create_info.ppEnabledLayerNames = nullptr;
 #endif
-    create_info.enabledExtensionCount =
-        sizeof(requested_extensions) / sizeof(requested_extensions[0]);
+    create_info.enabledExtensionCount = sizeof(requested_extensions) / sizeof(requested_extensions[0]);
     create_info.ppEnabledExtensionNames = requested_extensions;
 
     // Create Vulkan instance.
-    if (!vkCheck(vkCreateInstance(&create_info, nullptr, &instance))) {
+    if (!vkCheck(vkCreateInstance(&create_info, vk_alloc_callbacks, &vk_instance))) {
         return false;
     }
     LOG_DBG("Created Vulkan instance.");
@@ -95,12 +94,45 @@ bool Device::init(u32 window_width, u32 window_height) {
     swapchain_width = window_width;
     swapchain_height = window_height;
 
+// Choose extensions.
+#ifdef VULKAN_DEBUG_REPORT
+    {
+        u32 num_instance_extensions;
+        vkEnumerateInstanceExtensionProperties(nullptr, &num_instance_extensions, nullptr);
+        VkExtensionProperties *extensions =
+            (VkExtensionProperties *)malloc(sizeof(VkExtensionProperties) * num_instance_extensions);
+        vkEnumerateInstanceExtensionProperties(nullptr, &num_instance_extensions, extensions);
+        for (size_t i = 0; i < num_instance_extensions; i++) {
+            if (!strcmp(extensions[i].extensionName, VK_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
+                debug_utils_extension_present = true;
+                break;
+            }
+        }
+        free(extensions);
+
+        if (!debug_utils_extension_present) {
+            LOG_DBG("Extension %s for debugging non present.", VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+        } else {
+            // Create new debug utils callback
+            PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT =
+                (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
+                    vk_instance, "vkCreateDebugUtilsMessengerEXT");
+            VkDebugUtilsMessengerCreateInfoEXT debug_messenger_create_info =
+                create_debug_utils_messenger_info();
+
+            vkCreateDebugUtilsMessengerEXT(vk_instance, &debug_messenger_create_info, vk_alloc_callbacks,
+                                           &vk_debug_utils_messenger);
+        }
+    }
+#endif
+    // TODO: Do I have to do anything for the other extensions I request?
+
     LOG_DBG("Initialized device.");
     return true;
 }
 
 void Device::teardown() {
-    vkDestroyInstance(instance, nullptr);
+    vkDestroyInstance(vk_instance, nullptr);
 
     LOG_DBG("Device cleaned up.");
 }
