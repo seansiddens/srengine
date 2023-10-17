@@ -5,7 +5,7 @@
 namespace sren {
 
 bool Engine::init() {
-    if (!init_window()) {
+    if (!window.init(800, 600, "Sren Engine")) {
         LOG_ERR("Failed to initialize window!");
         return false;
     }
@@ -13,8 +13,6 @@ bool Engine::init() {
 
     return true;
 }
-
-bool Engine::init_window() { return true; }
 
 void Engine::shutdown() {}
 

@@ -6,14 +6,13 @@ namespace sren {
 
 static f32 sdl_get_monitor_refresh() {
     SDL_DisplayMode current;
-    int should_be_zero = SDL_GetCurrentDisplayMode(0, &current);
-    if (!should_be_zero) {
-        LOG_ERR("Failed to fetch monitor refresh rate.");
+    if (SDL_GetCurrentDisplayMode(0, &current) != 0) {
+        LOG_ERR("Failed to fetch monitor refresh rate: %s", SDL_GetError());
     }
     return 1.0f / current.refresh_rate;
 }
 
-bool Window::init(u32 width_, u32 height_) {
+bool Window::init(u32 width_, u32 height_, const char *window_title) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         LOG_ERR("SDL_Init error: %s", SDL_GetError());
         return false;
@@ -23,7 +22,6 @@ bool Window::init(u32 width_, u32 height_) {
 
     // TODO: Initialize w/ user passed window config.
     auto window_flags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE;
-    auto window_title = "Sren Engine";
     window_handle = SDL_CreateWindow(window_title, SDL_WINDOWPOS_CENTERED,
                                      SDL_WINDOWPOS_CENTERED, width, height, window_flags);
 

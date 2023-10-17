@@ -11,7 +11,7 @@ typedef void (*OsMessagesCallback)(void *os_event, void *user_data);
 
 class Window {
   public:
-    bool init(u32 width, u32 height);
+    bool init(u32 width_, u32 height_, const char *window_title);
     void teardown();
 
     void handle_os_messages();
@@ -28,8 +28,6 @@ class Window {
     bool requested_exit = false;
     bool resized = false;
     bool minimized = false;
-    u32 width = 0;
-    u32 height = 0;
     f32 display_refresh = 1.0f / 60.0f;
 };
 

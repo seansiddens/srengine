@@ -11,7 +11,6 @@ class Engine {
     void shutdown();
 
   private:
-    bool init_window();
     bool init_vulkan();
     bool init_resources();
 
