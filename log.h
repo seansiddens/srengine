@@ -4,12 +4,18 @@
 #include <memory>
 #include <string>
 
+#define ENABLE_DEBUG_LOGGING
+
 #define LOG_INFO(format, ...)                                                                 \
     sren::LogService::log_info(__FILE__, __LINE__, format, ##__VA_ARGS__);
 #define LOG_ERR(format, ...)                                                                  \
     sren::LogService::log_error(__FILE__, __LINE__, format, ##__VA_ARGS__);
+#ifdef ENABLE_DEBUG_LOGGING
 #define LOG_DBG(format, ...)                                                                  \
-    sren::LogService::log_debug(__FILE__, __LINE__, format, ##__VA_ARGS__);
+    sren::LogService::log_debug(__FILE__, __LINE__, format, ##__VA_ARGS__)
+#else
+#define LOG_DBG(format, ...)
+#endif
 
 namespace sren {
 
