@@ -1,6 +1,6 @@
 # Define the compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra $(shell sdl2-config --cflags)
+CXXFLAGS = -std=c++17 -Wall -Wextra -Wno-format-security $(shell sdl2-config --cflags)
 
 BUILD_DIR = build
 
