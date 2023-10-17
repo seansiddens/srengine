@@ -1,6 +1,7 @@
 #pragma once
 
 #include "platform.h"
+#include "window.h"
 
 namespace sren {
 
@@ -9,13 +10,12 @@ class Engine {
     bool init();
     void shutdown();
 
-
   private:
     bool init_window();
     bool init_vulkan();
     bool init_resources();
 
-    void *m_window;
+    Window window;
 };
 
 } // namespace sren
