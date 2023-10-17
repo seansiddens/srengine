@@ -1,5 +1,6 @@
 #pragma once
 
+#include "device.h"
 #include "platform.h"
 #include "window.h"
 
@@ -17,6 +18,7 @@ class Engine {
     bool init_resources();
 
     Window window;
+    Device device;
 };
 
 } // namespace sren

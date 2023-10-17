@@ -4,12 +4,21 @@
 
 namespace sren {
 
+const u32 window_width = 800;
+const u32 window_height= 600;
+
 bool Engine::init() {
-    if (!window.init(800, 600, "Sren Engine")) {
+    // Initialize window.
+    if (!window.init(window_width, window_height, "Sren Engine")) {
         LOG_ERR("Failed to initialize window!");
         return false;
     }
-    LOG_INFO("Initialized window.");
+
+    // Initialize device.
+    if (!device.init(window_width, window_height)) {
+        LOG_ERR("Failed to initialize device!");
+        return false;
+    }
 
     LOG_INFO("Engine succesfully initialized.");
     return true;
@@ -17,6 +26,7 @@ bool Engine::init() {
 
 void Engine::shutdown() {
     window.teardown();
+    device.teardown();
     LOG_INFO("Engine shutdown.");
 }
 
