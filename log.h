@@ -23,17 +23,17 @@ class LogService {
   public:
     template <typename... Args>
     static void log_info(const char *file, int line, const char *format, Args... args) {
-        log("INFO", file, line, format, args...);
+        log("\033[1;32mINFO\033[0m", file, line, format, args...); // Green
     }
 
     template <typename... Args>
     static void log_error(const char *file, int line, const char *format, Args... args) {
-        log("ERROR", file, line, format, args...);
+        log("\033[1;31mERROR\033[0m", file, line, format, args...); // Red
     }
 
     template <typename... Args>
     static void log_debug(const char *file, int line, const char *format, Args... args) {
-        log("DEBUG", file, line, format, args...);
+        log("\033[1;34mDEBUG\033[0m", file, line, format, args...); // Blue
     }
 
   private:
